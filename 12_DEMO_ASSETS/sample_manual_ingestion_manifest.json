@@ -1,0 +1,23 @@
+{
+  "document_id": "MAN-COMP-A7-2026",
+  "title": "Compressor A7 Service Manual",
+  "version": "3.2",
+  "doc_type": "manual",
+  "asset_models": [
+    "Compressor-A7"
+  ],
+  "owner_department": "Maintenance Engineering",
+  "approval_required": true,
+  "target_sites": [
+    "plant_01"
+  ],
+  "effective_date": "2026-07-01",
+  "security_classification": "P2",
+  "ingestion_options": {
+    "ocr": true,
+    "extract_tables": true,
+    "extract_figures": true,
+    "compile_sop_graph": true,
+    "detect_prompt_injection": true
+  }
+}

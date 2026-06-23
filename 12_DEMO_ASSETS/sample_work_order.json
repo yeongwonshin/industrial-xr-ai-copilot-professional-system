@@ -1,0 +1,15 @@
+{
+  "work_order_id": "WO-2026-01821",
+  "site_id": "plant_01",
+  "asset_id": "compressor_A7_03",
+  "title": "Compressor A7 filter replacement and E47 inspection",
+  "priority": "high",
+  "assigned_to": "technician_group_A",
+  "procedure_id": "SOP-COMP-A7-FILTER-LOTO",
+  "due_at": "2026-07-03T17:00:00+09:00",
+  "required_certifications": [
+    "LOTO_BASIC",
+    "COMPRESSOR_MAINT_A7"
+  ],
+  "notes": "E47 occurred twice in the past 7 days. Check cooling flow and filter clogging."
+}

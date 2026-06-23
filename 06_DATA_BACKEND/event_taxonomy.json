@@ -1,0 +1,98 @@
+{
+  "version": "0.1",
+  "events": [
+    {
+      "name": "xr.session.started",
+      "category": "session",
+      "required_fields": [
+        "tenant_id",
+        "site_id",
+        "worker_id_hash",
+        "device_id"
+      ]
+    },
+    {
+      "name": "worker.question.asked",
+      "category": "ai",
+      "required_fields": [
+        "session_id",
+        "transcript",
+        "current_step_id"
+      ]
+    },
+    {
+      "name": "ai.answer.generated",
+      "category": "ai",
+      "required_fields": [
+        "session_id",
+        "intent",
+        "source_refs",
+        "confidence"
+      ]
+    },
+    {
+      "name": "perception.object.detected",
+      "category": "perception",
+      "required_fields": [
+        "session_id",
+        "label",
+        "confidence",
+        "frame_ref"
+      ]
+    },
+    {
+      "name": "procedure.step.started",
+      "category": "procedure",
+      "required_fields": [
+        "session_id",
+        "step_id"
+      ]
+    },
+    {
+      "name": "procedure.step.completed",
+      "category": "procedure",
+      "required_fields": [
+        "session_id",
+        "step_id",
+        "evidence_ids"
+      ]
+    },
+    {
+      "name": "safety.rule.blocked",
+      "category": "safety",
+      "required_fields": [
+        "session_id",
+        "policy_id",
+        "reason",
+        "evidence_ids"
+      ]
+    },
+    {
+      "name": "expert.escalation.requested",
+      "category": "expert",
+      "required_fields": [
+        "session_id",
+        "reason",
+        "context_bundle_id"
+      ]
+    },
+    {
+      "name": "evidence.created",
+      "category": "evidence",
+      "required_fields": [
+        "session_id",
+        "evidence_id",
+        "evidence_type"
+      ]
+    },
+    {
+      "name": "knowledge.document.approved",
+      "category": "knowledge",
+      "required_fields": [
+        "document_id",
+        "version",
+        "approved_by"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: FieldSense XR AI Work Copilot API
+  version: 0.9.0
+  description: API draft for XR client, AI orchestration, safety policy, work sessions, and evidence logging.
+servers:
+  - url: https://api.fieldsense.example.com/v1
+security:
+  - bearerAuth: []
+paths:
+  /sessions:
+    post:
+      summary: Start XR work session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartSessionRequest'
+      responses:
+        '201':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkSession'
+  /sessions/{sessionId}/ask:
+    post:
+      summary: Ask contextual AI question
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+      responses:
+        '200':
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIResponse'
+  /sessions/{sessionId}/steps/{stepId}/validate:
+    post:
+      summary: Validate procedure step before completion
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: stepId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepValidationRequest'
+      responses:
+        '200':
+          description: Safety and evidence validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SafetyDecision'
+  /sessions/{sessionId}/evidence:
+    post:
+      summary: Create evidence artifact
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvidenceCreateRequest'
+      responses:
+        '201':
+          description: Evidence created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence'
+  /expert/escalations:
+    post:
+      summary: Request remote expert assistance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EscalationRequest'
+      responses:
+        '201':
+          description: Escalation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Escalation'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    StartSessionRequest:
+      type: object
+      required: [site_id, worker_id, device_id]
+      properties:
+        site_id: { type: string }
+        worker_id: { type: string }
+        device_id: { type: string }
+        work_order_id: { type: string }
+        asset_id: { type: string }
+        procedure_id: { type: string }
+    WorkSession:
+      type: object
+      properties:
+        session_id: { type: string }
+        status: { type: string, enum: [PRECHECK, IN_PROGRESS, BLOCKED, WAITING_APPROVAL, ESCALATED, COMPLETED] }
+        current_step_id: { type: string }
+        started_at: { type: string, format: date-time }
+    AskRequest:
+      type: object
+      required: [transcript]
+      properties:
+        transcript: { type: string }
+        current_frame_ref: { type: string }
+        detected_objects:
+          type: array
+          items: { $ref: '#/components/schemas/DetectedObject' }
+        ocr_text:
+          type: array
+          items: { type: string }
+        sensor_values:
+          type: object
+          additionalProperties: true
+    DetectedObject:
+      type: object
+      properties:
+        object_id: { type: string }
+        label: { type: string }
+        confidence: { type: number }
+        bbox: { type: array, items: { type: number } }
+    AIResponse:
+      type: object
+      properties:
+        intent: { type: string }
+        spoken_response: { type: string }
+        display_cards:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              body: { type: string }
+              severity: { type: string, enum: [INFO, CAUTION, DANGER] }
+              anchor_target: { type: string }
+        recommended_actions:
+          type: array
+          items: { type: string }
+        requires_human_confirmation: { type: boolean }
+        source_refs:
+          type: array
+          items: { type: string }
+        confidence: { type: number }
+    StepValidationRequest:
+      type: object
+      properties:
+        evidence_ids:
+          type: array
+          items: { type: string }
+        worker_confirmation: { type: string }
+        model_outputs:
+          type: array
+          items: { type: object }
+    SafetyDecision:
+      type: object
+      properties:
+        decision: { type: string, enum: [ALLOW, CAUTION, BLOCK, REQUIRE_APPROVAL, EMERGENCY_STOP] }
+        reasons:
+          type: array
+          items: { type: string }
+        required_actions:
+          type: array
+          items: { type: string }
+        policy_refs:
+          type: array
+          items: { type: string }
+    EvidenceCreateRequest:
+      type: object
+      properties:
+        evidence_type: { type: string }
+        step_id: { type: string }
+        file_ref: { type: string }
+        metadata: { type: object }
+    Evidence:
+      type: object
+      properties:
+        evidence_id: { type: string }
+        created_at: { type: string, format: date-time }
+        redacted: { type: boolean }
+        retention_until: { type: string, format: date-time }
+    EscalationRequest:
+      type: object
+      properties:
+        session_id: { type: string }
+        reason: { type: string }
+        context_bundle: { type: object }
+    Escalation:
+      type: object
+      properties:
+        escalation_id: { type: string }
+        status: { type: string }

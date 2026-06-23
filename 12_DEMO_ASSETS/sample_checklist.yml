@@ -1,0 +1,57 @@
+procedure_id: SOP-COMP-A7-FILTER-LOTO
+version: 1.0
+asset_model: Compressor-A7
+steps:
+  - step_id: identify_asset
+    title: 장비 ID 확인
+    risk_level: LOW
+    required_evidence:
+      - asset_qr_or_label
+    validation:
+      type: visual_or_qr
+  - step_id: ppe_check
+    title: PPE 착용 확인
+    risk_level: MEDIUM
+    required_ppe:
+      - gloves
+      - face_shield
+      - safety_shoes
+    validation:
+      type: visual_and_self_confirm
+  - step_id: power_off
+    title: Pump P-2 전원 OFF
+    risk_level: HIGH
+    required_evidence:
+      - breaker_off_visual
+    validation:
+      type: visual_confirm
+    on_fail: BLOCK
+  - step_id: loto_apply
+    title: LOTO 태그 부착
+    risk_level: HIGH
+    required_evidence:
+      - lock_tag_visual
+    validation:
+      type: visual_and_supervisor_optional
+    on_fail: BLOCK
+  - step_id: valve_close
+    title: 밸브 V-302 CLOSE 확인
+    risk_level: HIGH
+    preconditions:
+      - power_off
+      - loto_apply
+    required_evidence:
+      - valve_closed_visual
+    validation:
+      type: visual_confirm
+    on_fail: BLOCK
+  - step_id: pressure_zero
+    title: 압력계 G-12 0 bar 확인
+    risk_level: HIGH
+    required_evidence:
+      - pressure_gauge_ocr
+    validation:
+      type: ocr_or_sensor
+    thresholds:
+      pressure_bar_max: 0.05
+    on_fail: BLOCK
